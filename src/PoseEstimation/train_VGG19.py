@@ -88,7 +88,8 @@ def get_loss(saved_for_loss, heat_temp, heat_weight,
 
     names = build_names()
     saved_for_log = OrderedDict()
-    criterion = nn.MSELoss(size_average=True).cuda()
+    #criterion = nn.MSELoss(size_average=True).cuda()
+    criterion = nn.MSELoss(size_average=True).cpu()
     #criterion = encoding.nn.DataParallelCriterion(criterion, device_ids=args.gpu_ids)
     total_loss = 0
 
@@ -159,12 +160,19 @@ def train(train_loader, model, optimizer, epoch):
         #    writer.add_histogram(name, param.clone().cpu().data.numpy(),i)        
         data_time.update(time.time() - end)
 
+        '''
         img = img.cuda()
         heatmap_target = heatmap_target.cuda()
         heat_mask = heat_mask.cuda()
         paf_target = paf_target.cuda()
         paf_mask = paf_mask.cuda()
+        '''
         
+        img = img.cpu()
+        heatmap_target = heatmap_target.cpu()
+        heat_mask = heat_mask.cpu()
+        paf_target = paf_target.cpu()
+        paf_mask = paf_mask.cpu()
         # compute output
         _,saved_for_loss = model(img)
         
@@ -213,12 +221,19 @@ def validate(val_loader, model, epoch):
         # measure data loading time
         data_time.update(time.time() - end)
 
+        '''
         img = img.cuda()
         heatmap_target = heatmap_target.cuda()
         heat_mask = heat_mask.cuda()
         paf_target = paf_target.cuda()
         paf_mask = paf_mask.cuda()
+        '''
         
+        img = img.cpu()
+        heatmap_target = heatmap_target.cpu()
+        heat_mask = heat_mask.cpu()
+        paf_target = paf_target.cpu()
+        paf_mask = paf_mask.cpu()
         # compute output
         _,saved_for_loss = model(img)
         
@@ -279,7 +294,8 @@ print('val dataset len: {}'.format(len(valid_data.dataset)))
 # model
 model = get_model(trunk='vgg19')
 #model = encoding.nn.DataParallelModel(model, device_ids=args.gpu_ids)
-model = torch.nn.DataParallel(model).cuda()
+#model = torch.nn.DataParallel(model).cuda()
+model = torch.nn.DataParallel(model).cpu()
 # load pretrained
 use_vgg(model, args.model_path, 'vgg19')
 

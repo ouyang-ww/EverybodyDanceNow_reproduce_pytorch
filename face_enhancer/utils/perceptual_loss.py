@@ -7,7 +7,8 @@ import os
   something is wrong? Must double check this time...
 """
 class VGG_perceptual_loss(nn.Module):
-    def __init__(self, pretrained=False, device='cuda'):
+    #def __init__(self, pretrained=False, device='cuda'):
+    def __init__(self, pretrained=False, device='cpu'):
         super(VGG_perceptual_loss, self).__init__()
         self.device = device
         self.loss_function = nn.L1Loss()

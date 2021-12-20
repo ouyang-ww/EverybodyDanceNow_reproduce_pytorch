@@ -83,7 +83,10 @@ for img_idx in tqdm(range(len(os.listdir(path)))):
     new_head_pose.append([new_head_y,new_head_x])
     head = img[int(new_head_x - crop_size): int(new_head_x + crop_size),
            int(new_head_y - crop_size): int(new_head_y + crop_size), :]
-    plt.imshow(head)
+    try:
+        plt.imshow(head)
+    except ValueError:
+        pass
     plt.savefig(str(head_dir.joinpath('pose_{}.jpg'.format(img_idx))))
 
 

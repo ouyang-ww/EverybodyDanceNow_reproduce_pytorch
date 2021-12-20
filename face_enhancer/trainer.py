@@ -7,9 +7,10 @@ import torch.optim as optim
 from skimage.io import imsave
 
 class Trainer(object):
+    #update max_batches=40000 to 2000
     def __init__(self, ckpt_dir, log_dir, dataset, dataloader,
                  log_every=10, save_every=500,
-                 max_batches=40000, gen_lr=1e-4, dis_lr=1e-4):
+                 max_batches=2000, gen_lr=1e-4, dis_lr=1e-4):
 
         if not os.path.isdir(ckpt_dir):
             os.mkdir(ckpt_dir)
@@ -24,7 +25,8 @@ class Trainer(object):
         self.gen_lr = gen_lr
         self.dis_lr = dis_lr
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.dataset = dataset
         self.dataset_len = len(dataset)
         self.sampler = dataloader
@@ -183,4 +185,4 @@ class Trainer(object):
             if batch % self.save_every == 0:
                 self.validate_and_save(generator, batch)
                 self.save_models(generator, discriminator, batch)
-                torch.cuda.empty_cache()  # just for safety
+                #torch.cuda.empty_cache()  # just for safety

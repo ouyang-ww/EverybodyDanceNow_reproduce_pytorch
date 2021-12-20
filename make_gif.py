@@ -16,6 +16,7 @@ source_img_paths = sorted(source_dir.iterdir())
 target_synth_paths = sorted(target_dir.glob('*synthesized*'))
 target_label_paths = sorted(label_dir.iterdir())
 
+matplotlib.rcParams['animation.embed_limit'] = 25
 
 def animate(nframe):
     ax1.clear()
@@ -49,4 +50,4 @@ plt.close()
 js_anim = HTML(anim.to_jshtml())
  
 
-anim.save("output.gif", writer="imagemagick")
+anim.save("output.gif", writer="pillow")

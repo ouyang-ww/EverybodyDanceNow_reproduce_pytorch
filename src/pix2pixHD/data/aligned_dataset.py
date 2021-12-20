@@ -10,6 +10,7 @@ class AlignedDataset(BaseDataset):
         self.opt = opt
         self.root = opt.dataroot    
 
+        print('===== AlignedDataset test, start')
         ### input A (label maps)
         dir_A = '_A' if self.opt.label_nc == 0 else '_label'
         self.dir_A = os.path.join(opt.dataroot, opt.phase + dir_A)
@@ -31,6 +32,8 @@ class AlignedDataset(BaseDataset):
             self.dir_feat = os.path.join(opt.dataroot, opt.phase + '_feat')
             print('----------- loading features from %s ----------' % self.dir_feat)
             self.feat_paths = sorted(make_dataset(self.dir_feat))
+
+        print('===== AlignedDataset test')
 
         self.dataset_size = len(self.A_paths) 
       

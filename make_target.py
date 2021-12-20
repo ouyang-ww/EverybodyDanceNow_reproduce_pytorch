@@ -7,7 +7,7 @@ from pathlib import Path
 import os
 import warnings
 warnings.filterwarnings('ignore')
-os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
 openpose_dir = Path('./src/PoseEstimation/')
 
@@ -44,7 +44,7 @@ weight_name = './src/PoseEstimation/network/weight/pose_model.pth'
 print('load model...')
 model = get_model('vgg19')
 model.load_state_dict(torch.load(weight_name))
-model = torch.nn.DataParallel(model).cuda()
+model = torch.nn.DataParallel(model).to('cpu')
 model.float()
 model.eval()
 pass
@@ -104,4 +104,4 @@ for idx in tqdm(range(len(os.listdir(str(img_dir))))):
 
 pose_cords = np.array(pose_cords, dtype=np.int)
 np.save(str((save_dir.joinpath('pose.npy'))), pose_cords)
-torch.cuda.empty_cache()
+#torch.cuda.empty_cache()

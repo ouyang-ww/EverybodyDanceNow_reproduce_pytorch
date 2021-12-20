@@ -14,25 +14,31 @@ from util.visualizer import Visualizer
 from util import html
 import src.config.test_opt as opt
 
-os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+os.environ['CUDA_VISIBLE_DEVICES'] = ""
 iter_path = os.path.join(opt.checkpoints_dir, opt.name, 'iter.txt')
 
-data_loader = CreateDataLoader(opt)
-dataset = data_loader.load_data()
-visualizer = Visualizer(opt)
+def main():
+    data_loader = CreateDataLoader(opt)
+    dataset = data_loader.load_data()
+    visualizer = Visualizer(opt)
 
-web_dir = os.path.join(opt.results_dir, opt.name, '%s_%s' % (opt.phase, opt.which_epoch))
-webpage = html.HTML(web_dir, 'Experiment = %s, Phase = %s, Epoch = %s' % (opt.name, opt.phase, opt.which_epoch))
+    web_dir = os.path.join(opt.results_dir, opt.name, '%s_%s' % (opt.phase, opt.which_epoch))
+    webpage = html.HTML(web_dir, 'Experiment = %s, Phase = %s, Epoch = %s' % (opt.name, opt.phase, opt.which_epoch))
 
-model = create_model(opt)
+    model = create_model(opt)
 
-for data in tqdm(dataset):
-    minibatch = 1
-    generated = model.inference(data['label'], data['inst'])
+    print(dataset)
+    print('-------test')
+    for data in tqdm(dataset):
+        minibatch = 1
+        generated = model.inference(data['label'], data['inst'])
 
-    visuals = OrderedDict([('input_label', util.tensor2label(data['label'][0], opt.label_nc)),
-                           ('synthesized_image', util.tensor2im(generated.data[0]))])
-    img_path = data['path']
-    visualizer.save_images(webpage, visuals, img_path)
-webpage.save()
-torch.cuda.empty_cache()
+        visuals = OrderedDict([('input_label', util.tensor2label(data['label'][0], opt.label_nc)),
+                               ('synthesized_image', util.tensor2im(generated.data[0]))])
+        img_path = data['path']
+        visualizer.save_images(webpage, visuals, img_path)
+    webpage.save()
+    #torch.cuda.empty_cache()
+
+if __name__ ==  '__main__':
+    main()

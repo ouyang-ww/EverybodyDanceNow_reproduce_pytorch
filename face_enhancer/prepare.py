@@ -69,7 +69,7 @@ for data in tqdm(dataset):
     img_path = data['path']
     visualizer.save_images(webpage, visuals, img_path)
 webpage.save()
-torch.cuda.empty_cache()
+#torch.cuda.empty_cache()
 
 print('Copy the synthesized images...')
 synthesized_image_dir = './prepare/target/test_latest/images/'

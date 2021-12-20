@@ -39,9 +39,11 @@ def define_G(input_nc, output_nc, ngf, netG, n_downsample_global=3, n_blocks_glo
     else:
         raise('generator not implemented!')
     print(netG)
+    '''
     if len(gpu_ids) > 0:
         assert(torch.cuda.is_available())   
         netG.cuda(gpu_ids[0])
+    '''   
     netG.apply(weights_init)
     return netG
 
@@ -49,9 +51,11 @@ def define_D(input_nc, ndf, n_layers_D, norm='instance', use_sigmoid=False, num_
     norm_layer = get_norm_layer(norm_type=norm)   
     netD = MultiscaleDiscriminator(input_nc, ndf, n_layers_D, norm_layer, use_sigmoid, num_D, getIntermFeat)   
     print(netD)
+    '''
     if len(gpu_ids) > 0:
         assert(torch.cuda.is_available())
         netD.cuda(gpu_ids[0])
+    '''
     netD.apply(weights_init)
     return netD
 
@@ -103,8 +107,10 @@ class GANLoss(nn.Module):
         if isinstance(input[0], list):
             loss = 0
             for input_i in input:
-                pred = input_i[-1].cuda()
-                target_tensor = self.get_target_tensor(pred, target_is_real).cuda()
+                pred = input_i[-1].to('cpu')
+                #pred = input_i[-1].cuda()
+                target_tensor = self.get_target_tensor(pred, target_is_real).to('cpu')
+                #target_tensor = self.get_target_tensor(pred, target_is_real).cuda()
                 ##把加cuda()##
                 loss += self.loss(pred, target_tensor)
             return loss
@@ -115,7 +121,8 @@ class GANLoss(nn.Module):
 class VGGLoss(nn.Module):
     def __init__(self, gpu_ids):
         super(VGGLoss, self).__init__()        
-        self.vgg = Vgg19().cuda()
+        self.vgg = Vgg19().to('cpu')
+        #self.vgg = Vgg19().cuda()
         self.criterion = nn.L1Loss()
         self.weights = [1.0/32, 1.0/16, 1.0/8, 1.0/4, 1.0]        
 

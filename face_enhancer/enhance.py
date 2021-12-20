@@ -18,7 +18,8 @@ image_transforms = transforms.Compose([
         transforms.Normalize([.5, .5, .5], [.5, .5, .5]),
     ])
     
-device = torch.device('cuda')
+#device = torch.device('cuda')
+device = torch.device('cpu')
 
 
 def load_models(directory):

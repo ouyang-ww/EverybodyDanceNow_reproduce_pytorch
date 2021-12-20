@@ -3,11 +3,13 @@ import cv2
 from pathlib import Path
 import os
 import torch
-os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+os.environ['CUDA_VISIBLE_DEVICES'] = ""
 
 torch.multiprocessing.set_sharing_strategy('file_system')
+'''
 torch.backends.cudnn.benchmark = True
 torch.cuda.set_device(0)
+'''
 
 save_dir = Path('./data/source/')
 save_dir.mkdir(exist_ok=True)
@@ -52,7 +54,7 @@ weight_name = './src/PoseEstimation/network/weight/pose_model.pth'
 
 model = get_model('vgg19')
 model.load_state_dict(torch.load(weight_name))
-model = torch.nn.DataParallel(model).cuda()
+model = torch.nn.DataParallel(model).to('cpu')
 model.float()
 model.eval()
 
@@ -104,4 +106,4 @@ for idx in tqdm(range(len(os.listdir(str(img_dir))))):
 
 pose_cords_arr = np.array(pose_cords, dtype=np.int)
 np.save(str((save_dir.joinpath('pose_source.npy'))), pose_cords_arr)
-torch.cuda.empty_cache()
+#torch.cuda.empty_cache()

@@ -20,9 +20,9 @@ import util.util as util
 from util.visualizer import Visualizer
 import src.config.train_opt as opt
 
-os.environ['CUDA_VISIBLE_DEVICES'] = "0"
+os.environ['CUDA_VISIBLE_DEVICES'] = ""
 torch.multiprocessing.set_sharing_strategy('file_system')
-torch.backends.cudnn.benchmark = True
+#torch.backends.cudnn.benchmark = True
 
 
 def main():
@@ -32,20 +32,23 @@ def main():
     dataset_size = len(data_loader)
     print('#training images = %d' % dataset_size)
 
-    start_epoch, epoch_iter = 1, 0
+    start_epoch, epoch_iter = 23, 0
     total_steps = (start_epoch - 1) * dataset_size + epoch_iter
     display_delta = total_steps % opt.display_freq
     print_delta = total_steps % opt.print_freq
     save_delta = total_steps % opt.save_latest_freq
 
     model = create_model(opt)
-    model = model.cuda()
+    model = model.to('cpu')
     visualizer = Visualizer(opt)
 
+    print('#start epoch----------------')
     for epoch in range(start_epoch, opt.niter + opt.niter_decay + 1):
         epoch_start_time = time.time()
         if epoch != start_epoch:
             epoch_iter = epoch_iter % dataset_size
+        print('#epoch = %d ----------------' % epoch)
+        print('#epoch_iter = %d ----------------' % epoch_iter)
         for i, data in enumerate(dataset, start=epoch_iter):
             iter_start_time = time.time()
             total_steps += opt.batchSize
@@ -81,7 +84,8 @@ def main():
             ############## Display results and errors ##########
             ### print out errors
             if total_steps % opt.print_freq == print_delta:
-                errors = {k: v.data[0] if not isinstance(v, int) else v for k, v in loss_dict.items()}
+                #errors = {k: v.data[0] if not isinstance(v, int) else v for k, v in loss_dict.items()}
+                errors = {k: v.item() if not isinstance(v, int) else v for k, v in loss_dict.items()}
                 t = (time.time() - iter_start_time) / opt.batchSize
                 visualizer.print_current_errors(epoch, epoch_iter, errors, t)
                 visualizer.plot_current_errors(errors, total_steps)
@@ -91,7 +95,7 @@ def main():
                 visuals = OrderedDict([('input_label', util.tensor2label(data['label'][0], opt.label_nc)),
                                        ('synthesized_image', util.tensor2im(generated.data[0])),
                                        ('real_image', util.tensor2im(data['image'][0]))])
-                visualizer.display_current_results(visuals, epoch, total_steps)
+                #visualizer.display_current_results(visuals, epoch, total_steps)
 
             ### save latest model
             if total_steps % opt.save_latest_freq == save_delta:
@@ -121,7 +125,7 @@ def main():
         if epoch > opt.niter:
             model.update_learning_rate()
 
-    torch.cuda.empty_cache()
+#    torch.cuda.empty_cache()
 
 if __name__ == '__main__':
     main()

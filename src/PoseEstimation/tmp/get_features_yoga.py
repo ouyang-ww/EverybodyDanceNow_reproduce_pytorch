@@ -189,7 +189,8 @@ if __name__ == "__main__":
     save_dir  = '/data/coco/val2014_features/'
 
     model = get_model('vgg19')
-    model = torch.nn.DataParallel(model).cuda()
+    #model = torch.nn.DataParallel(model).cuda()
+    model = torch.nn.DataParallel(model).cpu()
 #    model = get_ying_model(stages=5, have_bn=True, have_bias=False)
 #    Load our model
     weight_name = './network/weight/pose_model_scratch.pth'
@@ -201,8 +202,9 @@ if __name__ == "__main__":
 
     model.eval()
     model.float()
-    model.cuda()
-    
+    #model.cuda()
+    model.cpu()
+
     feature_extractor = FeatureExtractor(model.model0)
     
     feature_extractor1_1 = FeatureExtractor(model.model1_1)
@@ -243,8 +245,9 @@ if __name__ == "__main__":
         
         batch_images = np.expand_dims(im_data,0)
        
-        batch_var = torch.from_numpy(batch_images).cuda().float()
-         
+        #batch_var = torch.from_numpy(batch_images).cuda().float()
+        batch_var = torch.from_numpy(batch_images).cpu().float()
+
         all_outputs = []
          
         outputs0, out1 = feature_extractor(batch_var)
